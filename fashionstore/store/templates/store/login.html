@@ -1,0 +1,118 @@
+{% extends 'store/base.html' %}
+{% block title %}Login — LuxeDress{% endblock %}
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background:var(--cream)">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        <div class="card border-0 shadow-lg overflow-hidden" style="border-radius:20px">
+          <div class="row g-0">
+            <!-- Left image panel -->
+            <div class="col-lg-5 d-none d-lg-block position-relative" style="background:#1a1a1a;min-height:540px">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,rgba(0,0,0,.7) 100%);z-index:1"></div>
+              <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80') center/cover;"></div>
+              <div style="position:absolute;bottom:32px;left:28px;right:28px;z-index:2;color:#fff">
+                <div style="font-size:.72rem;letter-spacing:2px;opacity:.7;text-transform:uppercase;margin-bottom:8px">New Collection</div>
+                <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;line-height:1.2">Define Your<br>Own Elegance.</div>
+              </div>
+              <div style="position:absolute;top:24px;left:24px;z-index:2">
+                <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fff">
+                  <i class="bi bi-gem me-1"></i>LuxeDress
+                </div>
+              </div>
+            </div>
+            <!-- Right form panel -->
+            <div class="col-lg-7 bg-white">
+              <div class="p-4 p-lg-5">
+                <h3 style="font-family:'Playfair Display',serif;font-weight:700;margin-bottom:4px">Welcome Back</h3>
+                <p class="text-muted mb-4" style="font-size:.88rem">Step into the world of curated fashion.</p>
+
+                <!-- Tab toggle -->
+                <div class="d-flex mb-4" style="background:#f5f5f5;border-radius:10px;padding:4px">
+                  <button class="btn flex-fill tab-toggle {% if tab == 'register' %}{% else %}active{% endif %}" id="loginTab" onclick="showTab('login')" style="border-radius:7px;font-weight:600;font-size:.88rem">Login</button>
+                  <button class="btn flex-fill tab-toggle {% if tab == 'register' %}active{% endif %}" id="registerTab" onclick="showTab('register')" style="border-radius:7px;font-weight:600;font-size:.88rem">Register</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form method="post" id="loginForm" {% if tab == 'register' %}style="display:none"{% endif %}>
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="login">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Username</label>
+                    <div class="input-group">
+                      <span class="input-group-text" style="background:#f9f9f9"><i class="bi bi-person text-muted"></i></span>
+                      <input type="text" name="username" class="form-control" placeholder="your_username" required style="border-left:0">
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <label class="form-label small fw-semibold mb-0">Password</label>
+                      <a href="#" class="text-muted" style="font-size:.8rem">Forgot?</a>
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-text" style="background:#f9f9f9"><i class="bi bi-lock text-muted"></i></span>
+                      <input type="password" name="password" class="form-control" placeholder="••••••••" required style="border-left:0">
+                    </div>
+                  </div>
+                  <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="keepLogin">
+                    <label class="form-check-label small" for="keepLogin">Keep me logged in</label>
+                  </div>
+                  <button type="submit" class="btn btn-forest w-100 py-2 mb-3">Sign In to Account</button>
+                  <div class="text-center text-muted small mb-3" style="position:relative">
+                    <span style="background:#fff;padding:0 12px;position:relative;z-index:1">OR CONTINUE WITH</span>
+                    <hr style="position:absolute;top:50%;left:0;right:0;z-index:0;margin:0">
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary flex-fill" style="border-radius:8px;font-size:.85rem"><i class="bi bi-google me-2"></i>Google</button>
+                    <button type="button" class="btn btn-outline-secondary flex-fill" style="border-radius:8px;font-size:.85rem"><i class="bi bi-github me-2"></i>Github</button>
+                  </div>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form method="post" id="registerForm" {% if tab != 'register' %}style="display:none"{% endif %}>
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="register">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Full Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Jane Doe" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="jane@example.com" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="jane_doe" required>
+                  </div>
+                  <div class="mb-4">
+                    <label class="form-label small fw-semibold">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required minlength="6">
+                  </div>
+                  <button type="submit" class="btn btn-forest w-100 py-2">Create Account</button>
+                </form>
+
+                <p class="text-center text-muted mt-3" style="font-size:.78rem">
+                  Admin? Login with <strong>admin / admin</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+.tab-toggle{background:transparent;border:none;color:var(--muted);padding:9px 0;transition:all .2s}
+.tab-toggle.active{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+</style>
+<script>
+function showTab(tab){
+  document.getElementById('loginForm').style.display = tab==='login'?'block':'none';
+  document.getElementById('registerForm').style.display = tab==='register'?'block':'none';
+  document.getElementById('loginTab').classList.toggle('active', tab==='login');
+  document.getElementById('registerTab').classList.toggle('active', tab==='register');
+}
+</script>
+{% endblock %}

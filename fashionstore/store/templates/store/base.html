@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}LuxeDress{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#1e4a35;--forest-mid:#2d6a4f;--sage:#52b788;--cream:#f8f5f0;--border:#e5e0d8;--ink:#1a1a1a;--muted:#6b7280}
+*{box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fff;color:var(--ink)}
+.navbar-brand{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--forest)!important}
+.nav-link{font-size:.88rem;font-weight:500;color:var(--ink)!important;transition:color .2s}
+.nav-link:hover,.nav-link.active{color:var(--forest)!important}
+.btn-forest{background:var(--forest);color:#fff;border:none;border-radius:8px;font-weight:500}
+.btn-forest:hover{background:var(--forest-mid);color:#fff}
+.btn-outline-forest{border:2px solid var(--forest);color:var(--forest);border-radius:8px;font-weight:500;background:transparent}
+.btn-outline-forest:hover{background:var(--forest);color:#fff}
+.badge-sale{background:#ef4444;color:#fff;font-size:.7rem;padding:3px 8px;border-radius:4px;font-weight:700}
+.badge-new{background:var(--forest);color:#fff;font-size:.7rem;padding:3px 8px;border-radius:4px;font-weight:700}
+.badge-popular{background:#1a1a1a;color:#fff;font-size:.7rem;padding:3px 8px;border-radius:4px;font-weight:700}
+.product-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:box-shadow .2s;background:#fff}
+.product-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.1)}
+.product-img-wrap{position:relative;overflow:hidden;height:280px;background:#f5f5f5}
+.product-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.product-card:hover .product-img-wrap img{transform:scale(1.04)}
+.product-img-wrap .badge-wrap{position:absolute;top:10px;left:10px}
+.product-img-wrap .wish-btn{position:absolute;top:10px;right:10px;background:#fff;border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer}
+.product-body{padding:14px}
+.product-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600}
+.product-name{font-size:.95rem;font-weight:600;margin:4px 0 6px;line-height:1.3}
+.product-price{font-size:1rem;font-weight:700;color:var(--ink)}
+.product-price-old{text-decoration:line-through;color:var(--muted);font-size:.85rem;margin-left:6px}
+.star-rating{color:#f59e0b;font-size:.8rem}
+.section-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700}
+.section-sub{color:var(--muted);font-size:.9rem}
+.footer-dark{background:#0f2419;color:rgba(255,255,255,.75)}
+.footer-dark h6{color:#fff;font-weight:600;margin-bottom:14px}
+.footer-dark a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.85rem;display:block;margin-bottom:6px}
+.footer-dark a:hover{color:#fff}
+.alert{border-radius:8px;font-size:.88rem}
+{% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>
+
+{% if messages %}
+<div style="position:fixed;top:16px;right:16px;z-index:9999;min-width:280px">
+{% for message in messages %}
+<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show shadow" role="alert">
+  {{ message }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+{% block body %}{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

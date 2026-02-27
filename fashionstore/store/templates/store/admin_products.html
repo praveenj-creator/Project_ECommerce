@@ -1,0 +1,156 @@
+{% extends 'store/base.html' %}
+{% block title %}Product Management — Admin{% endblock %}
+{% block extra_css %}
+body{background:#f4f6f9}
+.admin-content{margin-left:240px;min-height:100vh;padding:28px 32px}
+{% endblock %}
+{% block body %}
+{% include 'store/admin_sidebar.html' %}
+<div class="admin-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-0">Product Management</h4>
+      <div class="text-muted small">Catalogue, inventory control, and listing updates.</div>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="#" class="btn btn-outline-secondary btn-sm" style="border-radius:8px"><i class="bi bi-download me-1"></i>Export CSV</a>
+      <button class="btn btn-forest btn-sm" data-bs-toggle="modal" data-bs-target="#addModal" style="border-radius:8px"><i class="bi bi-plus me-1"></i>New Entry</button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- QUICK ADD FORM -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm h-100" style="border-radius:14px">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-plus-circle-fill me-2" style="color:var(--forest)"></i>Quick Add Product</h6>
+          <form method="post" action="{% url 'admin_product_add' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Product Name</label>
+              <input type="text" name="name" class="form-control" placeholder="e.g. Silk Wrap Maxi Dress" required style="border-radius:8px">
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Price ($)</label>
+                <input type="number" name="price" class="form-control" placeholder="99.00" step="0.01" required style="border-radius:8px">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Stock</label>
+                <input type="number" name="stock" class="form-control" placeholder="50" required style="border-radius:8px">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Category</label>
+              <select name="category" class="form-select" style="border-radius:8px">
+                {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- ✅ FIXED SIZES (NO split filter) -->
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Available Sizes</label>
+              <div class="d-flex gap-2 flex-wrap">
+
+                <label>
+                  <input type="checkbox" name="sizes" value="XS">
+                  <span class="btn btn-sm border btn-outline-secondary" style="border-radius:6px;font-size:.8rem;padding:3px 10px">XS</span>
+                </label>
+
+                <label>
+                  <input type="checkbox" name="sizes" value="S" checked>
+                  <span class="btn btn-sm border btn-outline-secondary" style="border-radius:6px;font-size:.8rem;padding:3px 10px">S</span>
+                </label>
+
+                <label>
+                  <input type="checkbox" name="sizes" value="M" checked>
+                  <span class="btn btn-sm border btn-outline-secondary" style="border-radius:6px;font-size:.8rem;padding:3px 10px">M</span>
+                </label>
+
+                <label>
+                  <input type="checkbox" name="sizes" value="L" checked>
+                  <span class="btn btn-sm border btn-outline-secondary" style="border-radius:6px;font-size:.8rem;padding:3px 10px">L</span>
+                </label>
+
+                <label>
+                  <input type="checkbox" name="sizes" value="XL">
+                  <span class="btn btn-sm border btn-outline-secondary" style="border-radius:6px;font-size:.8rem;padding:3px 10px">XL</span>
+                </label>
+
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Product Image</label>
+              <div class="border rounded-2 text-center p-3" style="border-style:dashed!important;background:#fafafa;cursor:pointer;border-radius:10px!important">
+                <input type="file" name="image" class="d-none" id="imgUpload" accept="image/*">
+                <label for="imgUpload" class="d-block" style="cursor:pointer">
+                  <i class="bi bi-cloud-arrow-up display-6 text-muted d-block mb-1"></i>
+                  <div class="small text-muted">Drag and drop or click to upload</div>
+                  <div style="font-size:.72rem;color:#aaa">PNG, JPG UP TO 5MB</div>
+                </label>
+              </div>
+            </div>
+
+            <input type="hidden" name="description" value="Premium quality fashion dress.">
+            <input type="hidden" name="status" value="active">
+
+            <button type="submit" class="btn btn-forest w-100 fw-semibold" style="border-radius:8px">
+              SAVE PRODUCT
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY TABLE (UNCHANGED) -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm" style="border-radius:14px">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">Live Inventory</h6>
+            <form method="get" class="d-flex gap-2">
+              <input type="text" name="q" value="{{ search }}" class="form-control form-control-sm" placeholder="Search products…" style="border-radius:8px;width:200px">
+              <button type="submit" class="btn btn-sm btn-outline-secondary" style="border-radius:8px">Search</button>
+            </form>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle" style="font-size:.85rem">
+              <thead style="background:var(--cream)">
+                <tr>
+                  <th>PRODUCT</th>
+                  <th>CATEGORY</th>
+                  <th>PRICE</th>
+                  <th>STOCK</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in products %}
+                <tr>
+                  <td>{{ p.name }}</td>
+                  <td>{{ p.category.name|default:"—" }}</td>
+                  <td>${{ p.price }}</td>
+                  <td>{{ p.stock }}</td>
+                  <td>{{ p.status }}</td>
+                  <td>
+                    <a href="{% url 'admin_product_edit' p.pk %}">Edit</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">No products</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

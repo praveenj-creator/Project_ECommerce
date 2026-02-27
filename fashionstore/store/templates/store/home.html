@@ -1,0 +1,173 @@
+{% extends 'store/base.html' %}
+{% block title %}LuxeDress — High-End Fashion For You{% endblock %}
+{% block body %}
+{% include 'store/navbar.html' %}
+
+<!-- HERO -->
+<section style="background:var(--cream);padding:60px 0 40px">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 style="font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:700;line-height:1.15;margin-bottom:16px">
+          High-End<br><span style="color:var(--forest)">Fashion</span> For You
+        </h1>
+        <p class="text-muted mb-4" style="font-size:.95rem;max-width:420px">Discover the latest trends in luxury dress fashion. Curated collections from world-class designers delivered to your doorstep.</p>
+        <div class="d-flex gap-3">
+          <a href="{% url 'shop' %}" class="btn btn-forest px-4 py-2">Shop Now</a>
+          <a href="{% url 'shop' %}?sort=newest" class="btn btn-outline-forest px-4 py-2">View Lookbook</a>
+        </div>
+      </div>
+      <div class="col-lg-6 mt-4 mt-lg-0 text-center">
+        <div style="border-radius:20px;overflow:hidden;display:inline-block;box-shadow:0 20px 60px rgba(0,0,0,.12)">
+          <img src="https://images.unsplash.com/photo-1566479179817-c07e2fb75be5?w=500&q=80" alt="Hero" style="width:100%;max-width:420px;height:480px;object-fit:cover">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h2 class="section-title">Shop by Category</h2>
+      <p class="section-sub">Explore our curated collections for everyone</p>
+    </div>
+    <div class="row g-3 justify-content-center">
+      {% for cat in categories %}
+      <div class="col-6 col-sm-3 col-lg-2">
+        <a href="{% url 'shop' %}?category={{ cat.id }}" class="text-decoration-none text-center d-block">
+          <div style="width:90px;height:90px;border-radius:50%;overflow:hidden;margin:0 auto 10px;background:#f0f0f0;border:2px solid var(--border)">
+            {% if cat.image %}
+            <img src="{{ cat.image.url }}" style="width:100%;height:100%;object-fit:cover">
+            {% else %}
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.8rem">
+              {% if cat.slug == 'men' %}👔{% elif cat.slug == 'women' %}👗{% elif cat.slug == 'kids' %}🧒{% else %}👜{% endif %}
+            </div>
+            {% endif %}
+          </div>
+          <div style="font-size:.88rem;font-weight:600;color:var(--ink)">{{ cat.name }}</div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- PROMO BANNERS -->
+<section class="py-2">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="p-4 rounded-3 h-100 d-flex flex-column justify-content-between" style="background:var(--forest);color:#fff;min-height:180px">
+          <div>
+            <div style="font-size:.8rem;font-weight:700;letter-spacing:1px;opacity:.8">SEASON SALE</div>
+            <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin:6px 0">UP TO 50% OFF</div>
+            <p style="font-size:.82rem;opacity:.8">Selected high-end dresses and luxury items. Limited time offer.</p>
+          </div>
+          <a href="{% url 'shop' %}" class="btn btn-light px-3 py-1 fw-semibold" style="font-size:.85rem;border-radius:8px;align-self:flex-start">Grab the Deal</a>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-4 rounded-3 h-100 d-flex flex-column justify-content-between" style="background:#0f2419;color:#fff;min-height:180px">
+          <div>
+            <div style="font-size:.8rem;font-weight:700;letter-spacing:1px;opacity:.8">NEW ARRIVALS</div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;margin:6px 0">Fresh from the Runway</div>
+            <p style="font-size:.82rem;opacity:.8">Be the first to wear the latest styles from our summer collection.</p>
+          </div>
+          <a href="{% url 'shop' %}?sort=newest" class="btn btn-outline-light px-3 py-1 fw-semibold" style="font-size:.85rem;border-radius:8px;align-self:flex-start">Shop Arrivals →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRENDING NOW -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <h2 class="section-title mb-1">Trending Now</h2>
+        <p class="section-sub mb-0">Most loved styles this week</p>
+      </div>
+      <a href="{% url 'shop' %}" class="text-decoration-none" style="color:var(--forest);font-size:.88rem;font-weight:600">View All +</a>
+    </div>
+    <div class="row g-3">
+      {% for p in trending %}
+      <div class="col-6 col-md-3">
+        <div class="product-card">
+          <div class="product-img-wrap">
+            {% if p.image %}
+            <img src="{{ p.image.url }}" alt="{{ p.name }}">
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&q=80" alt="{{ p.name }}">
+            {% endif %}
+            <div class="badge-wrap">{% if p.badge %}<span class="badge-sale">{{ p.badge }}</span>{% endif %}</div>
+          </div>
+          <div class="product-body">
+            <div class="product-label">{{ p.category.name|default:"Fashion" }}</div>
+            <div class="product-name">{{ p.name }}</div>
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <span class="product-price">${{ p.price }}</span>
+                {% if p.original_price %}<span class="product-price-old">${{ p.original_price }}</span>{% endif %}
+              </div>
+              <a href="{% url 'product_detail' p.pk %}" class="btn btn-forest btn-sm" style="border-radius:6px;padding:4px 10px"><i class="bi bi-cart-plus"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted py-4">No trending products yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="py-5" style="background:var(--cream)">
+  <div class="container text-center" style="max-width:520px">
+    <h2 class="section-title mb-2">Join our Style Circle</h2>
+    <p class="text-muted mb-4">Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+    <div class="d-flex gap-2">
+      <input type="email" class="form-control" placeholder="Enter your email" style="border-radius:8px">
+      <button class="btn btn-forest px-4">Subscribe</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer-dark py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:12px"><i class="bi bi-gem me-1"></i>LUXEDRESS</div>
+        <p style="font-size:.82rem;opacity:.7;line-height:1.6">Providing high-quality, high-fashion dress wear for those who demand excellence in every stitch.</p>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6>Shop</h6>
+        <a href="{% url 'shop' %}">Men's Collection</a>
+        <a href="{% url 'shop' %}">Women's Collection</a>
+        <a href="{% url 'shop' %}">Kid's Corner</a>
+        <a href="{% url 'shop' %}?sort=newest">New Arrivals</a>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6>Help</h6>
+        <a href="#">Customer Service</a>
+        <a href="#">Shipping Info</a>
+        <a href="#">Returns & Exchanges</a>
+        <a href="#">Contact Us</a>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6>Policies</h6>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+        <a href="#">Data Safety</a>
+      </div>
+    </div>
+    <hr style="border-color:rgba(255,255,255,.1);margin:28px 0 16px">
+    <div class="text-center" style="font-size:.78rem;opacity:.5">© 2024 LuxeDress Fashion Inc. All rights reserved.</div>
+  </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'store/base.html' %}
+{% block title %}Dashboard — Admin{% endblock %}
+{% block extra_css %}
+body{background:#f4f6f9}
+.admin-content{margin-left:240px;min-height:100vh;padding:28px 32px}
+.stat-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:22px}
+.stat-val{font-size:1.8rem;font-weight:700;margin:4px 0}
+.stat-label{font-size:.8rem;color:var(--muted)}
+.stat-change{font-size:.78rem;font-weight:600}
+.stat-change.up{color:#22c55e}.stat-change.neutral{color:var(--muted)}
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+{% endblock %}
+{% block body %}
+{% include 'store/admin_sidebar.html' %}
+<div class="admin-content">
+  <div class="admin-topbar">
+    <div>
+      <h4 class="fw-bold mb-0">Dashboard Overview</h4>
+    </div>
+    <div class="d-flex gap-2">
+      <input type="text" class="form-control form-control-sm" placeholder="🔍 Search orders, items..." style="width:220px;border-radius:8px">
+      <a href="{% url 'admin_product_add' %}" class="btn btn-forest btn-sm px-3"><i class="bi bi-plus me-1"></i>New Listing</a>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div style="background:#e0f2fe;border-radius:10px;padding:10px"><i class="bi bi-bag-check" style="font-size:1.3rem;color:#0284c7"></i></div>
+          <span class="stat-change up">+12.5%</span>
+        </div>
+        <div class="stat-label mt-3">Total Orders</div>
+        <div class="stat-val">{{ total_orders }}</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div style="background:#e0f7fa;border-radius:10px;padding:10px"><i class="bi bi-people" style="font-size:1.3rem;color:#0891b2"></i></div>
+          <span class="stat-change up">+5.2%</span>
+        </div>
+        <div class="stat-label mt-3">Total Users</div>
+        <div class="stat-val">{{ total_users }}</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div style="background:#fef3c7;border-radius:10px;padding:10px"><i class="bi bi-handbag" style="font-size:1.3rem;color:#d97706"></i></div>
+          <span class="stat-change neutral">0.0%</span>
+        </div>
+        <div class="stat-label mt-3">Total Products</div>
+        <div class="stat-val">{{ total_products }}</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="stat-card">
+        <div class="d-flex justify-content-between align-items-start">
+          <div style="background:#dcfce7;border-radius:10px;padding:10px"><i class="bi bi-currency-dollar" style="font-size:1.3rem;color:#16a34a"></i></div>
+          <span class="stat-change up">+18.3%</span>
+        </div>
+        <div class="stat-label mt-3">Monthly Revenue</div>
+        <div class="stat-val">${{ monthly_revenue|floatformat:0 }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVENUE CHART -->
+  <div class="card border-0 shadow-sm mb-4" style="border-radius:14px">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="fw-bold mb-0">Revenue Analytics</h5>
+          <div class="text-muted small">Overview of sales performance</div>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" style="border-radius:8px">Daily</button>
+          <button class="btn btn-sm btn-forest" style="border-radius:8px">Monthly</button>
+          <button class="btn btn-sm btn-outline-secondary" style="border-radius:8px">Yearly</button>
+        </div>
+      </div>
+      <canvas id="revenueChart" height="80"></canvas>
+    </div>
+  </div>
+
+  <!-- RECENT ORDERS -->
+  <div class="card border-0 shadow-sm" style="border-radius:14px">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Recent Orders</h5>
+        <a href="{% url 'admin_orders' %}" class="text-decoration-none" style="color:var(--forest);font-size:.85rem">View All Orders</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle" style="font-size:.88rem">
+          <thead style="background:var(--cream);border-radius:8px">
+            <tr><th class="border-0 text-muted small" style="font-weight:600">PRODUCT</th><th class="border-0 text-muted small">CUSTOMER</th><th class="border-0 text-muted small">STATUS</th><th class="border-0 text-muted small">DATE</th><th class="border-0 text-muted small">AMOUNT</th></tr>
+          </thead>
+          <tbody>
+            {% for order in recent_orders %}
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ order.items.first.product_name|default:"Order" }}</div>
+                <div class="text-muted small">#{{ order.order_id }}</div>
+              </td>
+              <td>{{ order.customer_name }}</td>
+              <td>
+                <span class="px-2 py-1 rounded" style="font-size:.75rem;font-weight:700;
+                  background:{% if order.status == 'shipped' %}#dbeafe{% elif order.status == 'delivered' %}#dcfce7{% elif order.status == 'cancelled' %}#fee2e2{% else %}#fef3c7{% endif %};
+                  color:{% if order.status == 'shipped' %}#1d4ed8{% elif order.status == 'delivered' %}#16a34a{% elif order.status == 'cancelled' %}#dc2626{% else %}#92400e{% endif %}">
+                  {{ order.status|upper }}
+                </span>
+              </td>
+              <td class="text-muted small">{{ order.created_at|timesince }} ago</td>
+              <td class="fw-bold">${{ order.total }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No orders yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const ctx = document.getElementById('revenueChart').getContext('2d');
+const labels = {{ chart_labels|safe }} || ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const data = {{ chart_data|safe }} || [1200,1800,2200,1900,2800,3100,3600,4100,4800,5200,4900,5800];
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: labels.length ? labels : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    datasets: [{
+      label: 'Revenue ($)',
+      data: data.length ? data : [1200,1800,2200,1900,2800,3100,3600,4100,4800,5200,4900,5800],
+      borderColor: '#1e4a35',
+      backgroundColor: 'rgba(30,74,53,.08)',
+      borderWidth: 2.5,
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#1e4a35',
+      pointRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: '#f0f0f0' }, ticks: { color: '#9ca3af', font: { size: 11 } } },
+      x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } }
+    }
+  }
+});
+</script>
+{% endblock %}

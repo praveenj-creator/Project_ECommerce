@@ -1,0 +1,37 @@
+{% extends 'store/base.html' %}
+{% block title %}Order Confirmed — LuxeDress{% endblock %}
+{% block body %}
+{% include 'store/navbar.html' %}
+<div class="container py-5 text-center" style="max-width:560px">
+  <div style="width:80px;height:80px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:2.2rem">✅</div>
+  <h2 style="font-family:'Playfair Display',serif;font-weight:700">Order Confirmed!</h2>
+  <p class="text-muted mt-2 mb-4">Thank you for shopping with LuxeDress. Your order has been placed successfully.</p>
+  {% if order %}
+  <div class="card border-0 shadow-sm text-start mb-4" style="border-radius:12px">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted small">Order ID</span>
+        <strong>#{{ order.order_id }}</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted small">Total</span>
+        <strong style="color:var(--forest)">${{ order.total }}</strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span class="text-muted small">Status</span>
+        <span class="badge" style="background:#fef3c7;color:#92400e">{{ order.status|title }}</span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span class="text-muted small">Shipping to</span>
+        <span class="small">{{ order.city }}, {{ order.pincode }}</span>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <div class="d-flex gap-3 justify-content-center">
+    <a href="{% url 'user_orders' %}" class="btn btn-forest px-4">View My Orders</a>
+    <a href="{% url 'shop' %}" class="btn btn-outline-forest px-4">Continue Shopping</a>
+  </div>
+</div>
+{% include 'store/footer.html' %}
+{% endblock %}
